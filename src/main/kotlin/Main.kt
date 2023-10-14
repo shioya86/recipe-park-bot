@@ -13,25 +13,28 @@ fun main() {
   val todayMenuCard = elements[getDayOfWeekIndex()]
   val menuUrl = todayMenuCard.select("a").attr("href")
 
-  // 今日の日付と情報を取得
+  //// 今日の日付と情報を取得
   val todayMenuHeader = todayMenuCard.select(".cardHeader")
   val dateStr = todayMenuHeader.select(".date").text()
 
-  // 御膳の画像を取得
+  //// 御膳の画像を取得
   val todayMenuBody = todayMenuCard.select(".cardBody")
   val todayMenuImages = todayMenuBody.select(".imageWrapper img").map {
     it.attr("src")
   }
 
-  // 御膳の構成と料理名の取得
+  //// 御膳の構成と料理名の取得
   val todayMenuTypes = todayMenuBody.select(".titleWrapper .recipeGroup").eachText()
   val todayMenuNames = todayMenuBody.select(".titleWrapper .recipeTitle").eachText()
 
-  // 送信用メッセージの生成
+  //// 送信用メッセージの生成
   val bodyData = generateSendJsonData(dateStr, menuUrl, todayMenuTypes, todayMenuNames, todayMenuImages).toByteArray()
 
-  // Discordにメッセージを送信
+  //// Discordにメッセージを送信
   val webhookURL = System.getenv("DISCORD_WEBHOOK_URL")
+  if (webhookURL == null) {
+    System.err.println("Error: Cannot read environment variable 'DISCORD_WEBHOOK_URL'")
+  }
   postDiscord(webhookURL, bodyData)
 }
 
@@ -83,7 +86,7 @@ fun postDiscord(webhookURL: String, bodyData: ByteArray): Result<Int> {
   val responseCode = con.responseCode
   if (responseCode !in 200..299) {
     // エラー処理
-    System.err.println("Response Error: code is ${con.responseCode}")
+    System.err.println("Error: Response code is ${con.responseCode}")
     return Result.failure(IOException())
   }
 

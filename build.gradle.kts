@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.shioya86"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -25,4 +25,14 @@ kotlin {
 
 application {
     mainClass.set("MainKt")
+}
+
+tasks.jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes["Main-Class"] = "MainKt"
+    }
+    configurations["runtimeClasspath"].forEach { file: File ->
+        from(zipTree(file.absoluteFile))
+    }
 }
